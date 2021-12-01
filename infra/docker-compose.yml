@@ -19,11 +19,12 @@ services:
     depends_on:
       - db
     restart: always
-    ports:
-      - "8000:8000"
     build:
       context: ../backend
       dockerfile: Dockerfile
+    volumes:
+      - static_value:/code/static/
+      - media_value:/code/media/
     env_file:
       - ../backend/.env
   nginx:
@@ -38,6 +39,8 @@ services:
       - ../frontend/build:/usr/share/nginx/html
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
 
 volumes:
   postgres_data:

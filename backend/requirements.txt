@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
+reportlab
 drf_extra_fields
 django-environ
 psycopg2-binary==2.8

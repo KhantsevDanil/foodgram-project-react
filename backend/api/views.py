@@ -1,51 +1,128 @@
 from .models import (Ingredient,
                      Tag,
                      Recipe,
-                     Favorite,
-                     Follow)
+                     Follow,
+                     IngredientAmount)
 from users.models import User
 from .serializer import (RecipeSerializer,
+                         M2MUserRecipeSerializer,
                          IngredientSerializer,
-                         FavoriteSerializer,
                          TagSerializer,
                          FollowSerializer,
-                         RecipeCreateSerializer)
+                         RecipeSerializerGet)
 from .permissions import (IsOwnerOrAdmin)
-from .filters import IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, viewsets, filters
+from pdf_format.pdf_generator import shopping_list_pdf
+from rest_framework import permissions, viewsets, status, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filterset_class = IngredientFilter
-
-
-class FavoriteViewSet(viewsets.ModelViewSet):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
-    filter_backends = [filters.SearchFilter]
-    permission_classes = [IsOwnerOrAdmin, ]
-    search_fields = ['User__username', 'Favorite__title']
-    http_method_names = ['post', 'delete']
-
-
-    def perform_create(self, serializer):
-        return serializer.save(user=self.request.user)
+    filter_backends = (IngredientFilter,)
+    pagination_class = None
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrAdmin,
+    ]
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
-            return RecipeSerializer
-        return RecipeCreateSerializer
+            return RecipeSerializerGet
+        return RecipeSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
+
+    @action(
+        detail=False,
+        methods=['get', 'delete'],
+        url_path=r'(?P<id>[\d]+)/favorite',
+        url_name='favorite',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def favorite(self, request, **kwargs):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=kwargs['id'])
+        like = User.objects.filter(
+            id=user.id,
+            favourite_recipes=recipe
+        ).exists()
+        if request.method == 'GET' and not like:
+            recipe.favorite_this.add(user)
+            serializer = M2MUserRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE' and like:
+            recipe.favorite_this.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'detail': 'Действие уже выполнено'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @action(
+        detail=False,
+        methods=['get', 'delete'],
+        url_path=r'(?P<id>[\d]+)/shopping_cart',
+        url_name='shopping_cart',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def shopping_cart(self, request, **kwargs):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=kwargs['id'])
+        is_added = User.objects.filter(
+            id=user.id,
+            shopping_carts=recipe
+        ).exists()
+        if request.method == 'GET' and not is_added:
+            recipe.shopping_cart.add(user)
+            serializer = M2MUserRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.method == 'DELETE' and is_added:
+            recipe.shopping_cart.remove(user)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'detail': 'Recipe have been added'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        user = request.user
+        return shopping_list_pdf(user)
+
+"""    @action(
+        detail=False,
+        methods=['get'],
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart',
+        pagination_class=None,
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        user = request.user
+        return generate_pdf_shopping_list(user)"""
 
 class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()

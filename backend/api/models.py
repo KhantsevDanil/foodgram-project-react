@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from users.models import User
 from django.utils.html import format_html
 
@@ -17,20 +17,17 @@ class Recipe(models.Model):
                             default='блюдо от шефповара',
                             blank=False)
     image = models.ImageField("Картинка",
-                              upload_to="api/",
                               blank=False)
     text = models.TextField("Текстовое описание",
                               blank=False)
     tags = models.ManyToManyField("Tag",
                                   related_name="recipes",
                                   verbose_name="Теги",
-                                  blank=False
     )
     ingredients = models.ManyToManyField("Ingredient",
                                          through="IngredientAmount",
                                          related_name="recipes",
                                          verbose_name="Ингридиенты",
-                                         blank=False
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
@@ -40,7 +37,16 @@ class Recipe(models.Model):
         default = 40,
         blank=False
     )
-
+    favorite_this = models.ManyToManyField(
+        User,
+        related_name='favourite_recipes',
+        verbose_name='Кому понравилось'
+    )
+    shopping_cart = models.ManyToManyField(
+        User,
+        related_name='shopping_carts',
+        verbose_name='Кто хочет купить'
+    )
     class Meta:
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
@@ -49,9 +55,17 @@ class Recipe(models.Model):
 class Tag(models.Model):
     """The model describes the tags for fetching by recipes."""
     name = models.CharField("Название", max_length=200)
+    hexcolor_regex = RegexValidator(
+        regex=r'^#(?:[0-9a-fA-F]{3}){1,2}$',
+        message=(
+            'Enter valid hex color number'
+        )
+    )
     color = models.CharField(
-        "Цвет", max_length=7,
-        blank=False
+        max_length=7,
+        unique=True,
+        validators=[hexcolor_regex],
+        verbose_name='Цвет'
     )
     slug = models.SlugField(
         "Ярлык", unique=True,
@@ -113,7 +127,7 @@ class IngredientAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
                                      blank=False,
         validators=[
-            MinValueValidator(limit_value=1, message="Amount can`t be smaller then 1")
+            MinValueValidator(limit_value=0, message="Amount can`t be smaller then 0")
         ],
         verbose_name="Количество"
     )
@@ -122,40 +136,8 @@ class IngredientAmount(models.Model):
         verbose_name = "Количество ингредиента"
         verbose_name_plural = "Количества ингредиентов"
 
-
-class Favorite(models.Model):
-    """user- a person who liked the recipe
-    recipe - a recipe that the user liked"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='favorites')
-    recipe = models.ManyToManyField(Recipe,
-                                    related_name="favorites",
-                                    verbose_name="понравившиеся ингридеенты",)
-
-
-class ShoppingCart(models.Model):
-    """user - a person who wants by the recipe
-        recipe - a recipe that the user want to buy"""
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='shopping_carts')
-    recipes = models.ManyToManyField(Recipe,
-                                    related_name="shopping_carts",
-                                    verbose_name="рецепты",)
-
-
-class IngredientInRecipe(models.Model):
-    """recipe - to which the list of its ingredients
-    belongs
-    ingredients - the list of ingredients that belong to this recipe,
-    the list of recipes cannot be empty"""
-    recipe = models.ForeignKey(Recipe,
-                             on_delete=models.CASCADE,
-                             related_name='ingredients_in_recipe')
-    ingredient = models.ManyToManyField(Ingredient,
-                                     related_name="ingredients_in_recipes",
-                                     verbose_name="Ингридиенты",
-                                     blank=False)
+    def __str__(self) -> str:
+        return self.ingredient.name
 
 
 class Follow(models.Model):
@@ -168,3 +150,16 @@ class Follow(models.Model):
                                         related_name="follows",
                                         verbose_name="People_who_u_subscribed",
                                         )
+"""
+
+class ShoppingCart(models.Model):
+    author = models.OneToOneField(User,
+                               related_name='shopping_carts',
+                               on_delete=models.CASCADE,
+                               verbose_name='author shopping cart')
+
+    recipes = models.ManyToManyField(Recipe,
+                                        related_name="shopping_carts",
+                                        verbose_name="recipes in shopping cart",
+                                        )
+"""

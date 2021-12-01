@@ -4,7 +4,6 @@ from .views import (
     FollowViewSet,
     TagViewSet,
     IngredientsViewSet,
-    FavoriteViewSet,
     GetFollower,
     RecipeViewSet
 )
@@ -16,10 +15,6 @@ router.register('recipes', RecipeViewSet, basename='recipe')
 router.register('ingredients', IngredientsViewSet, basename='ingredient')
 router.register('subscribe', GetFollower, basename='get_follower')
 router.register(r'users/(?P<title_id>\d+)/subscribe', FollowViewSet, basename='new_following')
-router.register(
-    r'recipe/(?P<title_id>\d+)/favorite',
-    FavoriteViewSet, basename='favorite'
-)
 
 
 urlpatterns = [
