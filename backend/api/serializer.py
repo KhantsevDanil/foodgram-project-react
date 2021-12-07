@@ -1,5 +1,6 @@
 from users.serializer import UserSerializer
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -7,9 +8,8 @@ from rest_framework import serializers
 from .models import (Ingredient,
                      Tag,
                      Recipe,
-                     IngredientAmount,
-                     Follow)
-from users.models import User
+                     IngredientAmount)
+from users.models import User, Follow
 
 
 
@@ -59,14 +59,8 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ['name', 'color', 'slug']
 
 
-class M2MUserRecipeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = ['id', 'name', 'image', 'cooking_time']
-        read_only_fields = ['name', 'image', 'cooking_time']
-
-
 class RecipeSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
     image = Base64ImageField()
     ingredients = IngredientAmountSerializer(many=True)
 
@@ -151,21 +145,18 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'image',
             'text',
-            'cooking_time'
+            'cooking_time',
+            'author'
         ]
 
 
 class RecipeSerializerGet(RecipeSerializer):
-    author = serializers.SerializerMethodField()
+    author = UserSerializer()
     image = Base64ImageField()
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_author(self, obj):
-        return UserSerializer(
-            User.objects.filter(username=obj.author.username).all(), many=True
-        ).data
 
     def get_ingredients(self, obj):
         return IngredientAmountSerializer(
@@ -199,17 +190,3 @@ class RecipeSerializerGet(RecipeSerializer):
             'text',
             'cooking_time'
         ]
-
-
-class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(
-        read_only=True, default=serializers.CurrentUserDefault()
-    )
-    following = serializers.SlugRelatedField(
-        slug_field="username",
-        queryset=User.objects.all()
-    )
-
-    class Meta:
-        fields = ("user", "following")
-        model = Follow

@@ -1,15 +1,12 @@
 from .models import (Ingredient,
                      Tag,
-                     Recipe,
-                     Follow,
-                     IngredientAmount)
+                     Recipe,)
 from users.models import User
 from .serializer import (RecipeSerializer,
-                         M2MUserRecipeSerializer,
                          IngredientSerializer,
                          TagSerializer,
-                         FollowSerializer,
                          RecipeSerializerGet)
+from users.serializer import M2MUserRecipeSerializer
 from .permissions import (IsOwnerOrAdmin)
 from .filters import IngredientFilter, RecipeFilter
 from django.shortcuts import get_object_or_404
@@ -34,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrAdmin,
     ]
-    filterset_class = RecipeFilter
+
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -46,6 +43,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
+
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.query_params.get('tags'):
+            need_tags = self.request.query_params.get('tags')
+            queryset = Recipe.objects.filter(tags__slug=need_tags)
+        if self.request.query_params.get('is_favorited'):
+            queryset = queryset.filter(favorite_this=self.request.user)
+        if self.request.query_params.get('is_in_shopping_cart'):
+            queryset = queryset.filter(shopping_cart=self.request.user)
+        return queryset
 
     @action(
         detail=False,
@@ -123,25 +132,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         user = request.user
         return generate_pdf_shopping_list(user)"""
-
-class FollowViewSet(viewsets.ModelViewSet):
-    queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
-    http_method_names = ['get', 'delete']
-
-    def perform_create(self, serializer):
-        return serializer.save(user=self.request.user)
-
-
-class GetFollower(viewsets.ModelViewSet):
-    serializer_class = FollowSerializer
-
-    def get_queryset(self):
-        user = get_object_or_404(User, username=self.request.user.username)
-        count_user_following = len(user.following.all())
-        return [(user.following[user_number] + user.following.recipes[user_number])
-                for user_number in range(count_user_following)]
 
 
 class TagViewSet(viewsets.ModelViewSet):

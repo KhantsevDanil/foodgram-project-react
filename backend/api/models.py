@@ -24,11 +24,6 @@ class Recipe(models.Model):
                                   related_name="recipes",
                                   verbose_name="Теги",
     )
-    ingredients = models.ManyToManyField("Ingredient",
-                                         through="IngredientAmount",
-                                         related_name="recipes",
-                                         verbose_name="Ингридиенты",
-    )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(limit_value=1, message="Time smaller 1")
@@ -116,12 +111,12 @@ class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name="ingredients_amount",
+        related_name="ingredient_amount",
         verbose_name="Ингредиент"
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE,
-        related_name="ingredients_amount",
+        related_name="ingredients",
         verbose_name="Рецепт"
     )
     amount = models.PositiveSmallIntegerField(
@@ -140,16 +135,7 @@ class IngredientAmount(models.Model):
         return self.ingredient.name
 
 
-class Follow(models.Model):
-    author = models.ForeignKey(User,
-                               related_name='follower',
-                               on_delete=models.CASCADE,
-                               verbose_name='follower')
 
-    subscriber = models.ManyToManyField(User,
-                                        related_name="follows",
-                                        verbose_name="People_who_u_subscribed",
-                                        )
 """
 
 class ShoppingCart(models.Model):
