@@ -9,7 +9,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
 
-
     class Meta:
         ordering = ['last_name']
         verbose_name = 'Пользователь'
@@ -17,6 +16,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.last_name} {self.first_name}'
+
 
 class Follow(models.Model):
     author = models.ForeignKey(User,
@@ -29,12 +29,3 @@ class Follow(models.Model):
                                    on_delete=models.CASCADE,
                                    verbose_name="People_who_u_subscribed",
                                    )
-"""class Subscribed(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE,
-        related_name="author_subscribed",
-        verbose_name="автор подписки")
-    subscriber = models.ManyToManyField(
-        User,
-        related_name='subsribers',
-        verbose_name='подписчик'
-    )"""

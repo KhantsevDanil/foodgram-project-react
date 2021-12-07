@@ -2,19 +2,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.core.exceptions import ValidationError
 
-from .models import User, Follow
-from .serializer import (
-    UserSerializer,
-    UserSubscriptionSerializer,
-    SetPasswordSerializer
-)
+from .models import Follow, User
+from .serializer import (SetPasswordSerializer, UserSerializer,
+                         UserSubscriptionSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
     @action(
         methods=['get'],
         detail=False,
@@ -22,6 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
         url_name='me',
         permission_classes=[permissions.IsAuthenticated],
     )
+
     def me(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(user)
@@ -49,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST)
 
     @action(
-        methods=['get',],
+        methods=['get'],
         detail=False,
         serializer_class=UserSubscriptionSerializer,
         permission_classes=[permissions.IsAuthenticated],
@@ -64,7 +62,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     @action(
         detail=False,

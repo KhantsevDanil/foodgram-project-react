@@ -4,7 +4,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-from api.models import IngredientAmount
+from recipes.models.ingredient_amount import IngredientAmount
 
 
 def shopping_list_pdf(user):

@@ -1,6 +1,9 @@
 from rest_framework import serializers
+
+from recipes.models.recipe import Recipe
+
 from .models import User
-from api.models import Recipe
+
 
 class SetPasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(
@@ -31,7 +34,6 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')

@@ -1,28 +1,14 @@
-from .models import (Ingredient,
-                     Tag,
-                     Recipe,)
-from users.models import User
-from .serializer import (RecipeSerializer,
-                         IngredientSerializer,
-                         TagSerializer,
-                         RecipeSerializerGet)
-from users.serializer import M2MUserRecipeSerializer
-from .permissions import (IsOwnerOrAdmin)
-from .filters import IngredientFilter, RecipeFilter
 from django.shortcuts import get_object_or_404
-from pdf_format.pdf_generator import shopping_list_pdf
-from rest_framework import permissions, viewsets, status, filters
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-
-
-class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    filter_backends = (IngredientFilter,)
-    pagination_class = None
-    search_fields = ('^name',)
+from pdf_format.pdf_generator import shopping_list_pdf
+from recipes.models.recipe import Recipe
+from recipes.permissions import IsOwnerOrAdmin
+from recipes.serializers.recipe import RecipeSerializer, RecipeSerializerGet
+from users.models import User
+from users.serializer import M2MUserRecipeSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -31,7 +17,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrAdmin,
     ]
-
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -43,7 +28,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -109,6 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             {'detail': 'Recipe have been added'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
     @action(
         detail=False,
         methods=['get'],
@@ -120,21 +105,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         user = request.user
         return shopping_list_pdf(user)
-
-"""    @action(
-        detail=False,
-        methods=['get'],
-        url_path='download_shopping_cart',
-        url_name='download_shopping_cart',
-        pagination_class=None,
-        permission_classes=[permissions.IsAuthenticated]
-    )
-    def download_shopping_cart(self, request):
-        user = request.user
-        return generate_pdf_shopping_list(user)"""
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    pagination_class = None

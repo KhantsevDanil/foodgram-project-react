@@ -5,7 +5,7 @@ def main(dump):
     i = 1
     for ingredient in dump:
         # print(ingredient)
-        inner_dict = {"model": "api.ingredient",
+        inner_dict = {"model": "recipes.ingredient",
                       "pk": i,
                       "fields": ingredient}
         new_list.append(inner_dict)

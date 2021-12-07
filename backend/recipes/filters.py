@@ -1,7 +1,8 @@
+from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import filters, FilterSet
+
+from recipes.models.recipe import Recipe
 from users.models import User
-from .models import Recipe
 
 
 class RecipeFilter(FilterSet):
@@ -11,6 +12,7 @@ class RecipeFilter(FilterSet):
     class Meta:
         model = Recipe
         fields = ['author', 'tags']
+
 
 class IngredientFilter(SearchFilter):
     search_param = 'name'
