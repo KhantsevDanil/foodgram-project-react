@@ -38,7 +38,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 existing_ingredients[instance] = True
             else:
                 raise ValidationError(
-                    'Ингридиенты не должны повторяться'
+                    'Ингредиенты не должны повторяться'
                 )
         if data['cooking_time'] <= 0:
             raise ValidationError(
@@ -49,7 +49,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         for tag in tags:
             if tag in existing_tags:
                 raise ValidationError(
-                    'Посторяющиеся теги недопустимы'
+                    'Повторяющиеся теги недопустимы'
                 )
             existing_tags['tag'] = True
         return data
