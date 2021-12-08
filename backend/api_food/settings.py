@@ -10,7 +10,7 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['51.250.19.224', 'localhost',]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,23 +59,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_food.wsgi.application'
 
 
-"""DATABASES = {
+DATABASES = {
     'default': {
-        ENGINE': env('ENGINE', default='django.db.backends.postgresql'),
+        'ENGINE': env('ENGINE', default='django.db.backends.postgresql'),
         'NAME': env('NAME'),
         'USER': env('USER'),
         'PASSWORD': env('PASSWORD'),
         'HOST': env('HOST'),
         'PORT': env('PORT'),
     }
-}"""
+}
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}
+}"""
 
 AUTH_PASSWORD_VALIDATORS = [
     {
