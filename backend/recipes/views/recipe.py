@@ -7,16 +7,20 @@ from pdf_format.pdf_generator import shopping_list_pdf
 from recipes.models.recipe import Recipe
 from recipes.permissions import IsOwnerOrAdmin
 from recipes.serializers.recipe import RecipeSerializer, RecipeSerializerGet
+from recipes.filters import RecipeFilter
 from users.models import User
 from users.serializer import M2MUserRecipeSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related('author').prefetch_related(
+        'ingredients'
+    ).all()
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsOwnerOrAdmin,
     ]
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -29,7 +33,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_queryset(self):
+    """def get_queryset(self):
         queryset = super().get_queryset()
         if self.request.query_params.get('tags'):
             need_tags = self.request.query_params.get('tags')
@@ -38,7 +42,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(favorite_this=self.request.user)
         if self.request.query_params.get('is_in_shopping_cart'):
             queryset = queryset.filter(shopping_cart=self.request.user)
-        return queryset
+        return queryset"""
 
     @action(
         detail=False,
