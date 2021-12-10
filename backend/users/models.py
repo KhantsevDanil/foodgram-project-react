@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.constraints import UniqueConstraint
 
 
 class User(AbstractUser):
@@ -30,6 +29,7 @@ class Follow(models.Model):
                                    on_delete=models.CASCADE,
                                    verbose_name="People_who_u_subscribed",
                                    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

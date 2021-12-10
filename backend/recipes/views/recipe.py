@@ -33,17 +33,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
-    """def get_queryset(self):
-        queryset = super().get_queryset()
-        if self.request.query_params.get('tags'):
-            need_tags = self.request.query_params.get('tags')
-            queryset = Recipe.objects.filter(tags__slug=need_tags)
-        if self.request.query_params.get('is_favorited'):
-            queryset = queryset.filter(favorite_this=self.request.user)
-        if self.request.query_params.get('is_in_shopping_cart'):
-            queryset = queryset.filter(shopping_cart=self.request.user)
-        return queryset"""
-
     @action(
         detail=False,
         methods=['get', 'delete'],

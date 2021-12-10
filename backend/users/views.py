@@ -19,7 +19,6 @@ class UserViewSet(viewsets.ModelViewSet):
         url_name='me',
         permission_classes=[permissions.IsAuthenticated],
     )
-
     def me(self, request, *args, **kwargs):
         user = request.user
         serializer = self.get_serializer(user)

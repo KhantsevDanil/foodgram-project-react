@@ -58,18 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_food.wsgi.application'
 
-
-"""DATABASES = {
-    'default': {
-        'ENGINE': env('ENGINE', default='django.db.backends.postgresql'),
-        'NAME': env('NAME'),
-        'USER': env('USER'),
-        'PASSWORD': env('PASSWORD'),
-        'HOST': env('HOST'),
-        'PORT': env('PORT'),
-    }
-}"""
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
