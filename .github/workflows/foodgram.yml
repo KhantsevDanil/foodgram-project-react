@@ -49,9 +49,9 @@ jobs:
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.HOST_YANDEX_CLOUD }}
+        username: ${{ secrets.USERNAME_YANDEX_CLOUD }}
+        key: ${{ secrets.SSH_YANDEX_CLOUD }}
         script: |
             cd foodgram-project-react/
             rm .env
