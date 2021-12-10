@@ -59,7 +59,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_food.wsgi.application'
 
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': env('ENGINE', default='django.db.backends.postgresql'),
         'NAME': env('NAME'),
@@ -68,14 +68,14 @@ DATABASES = {
         'HOST': env('HOST'),
         'PORT': env('PORT'),
     }
-}
+}"""
 
-"""DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}"""
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
