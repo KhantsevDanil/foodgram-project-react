@@ -52,6 +52,7 @@ jobs:
         host: ${{ secrets.HOST_YANDEX_CLOUD }}
         username: ${{ secrets.USERNAME_YANDEX_CLOUD }}
         key: ${{ secrets.SSH_YANDEX_CLOUD }}
+        passphrase: ${{ secrets.PASSPHRASE_YANDEX_CLOUD }}
         script: |
             cd foodgram-project-react/
             cd infra/
