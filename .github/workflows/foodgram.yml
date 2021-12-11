@@ -53,8 +53,7 @@ jobs:
         username: ${{ secrets.USERNAME_YANDEX_CLOUD }}
         key: ${{ secrets.SSH_YANDEX_CLOUD }}
         script: |
-            cd foodgram-project-react/
-            cd infra/
+            ls
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO_NAME }}
             sudo docker-compose stop
             sudo docker-compose rm web
