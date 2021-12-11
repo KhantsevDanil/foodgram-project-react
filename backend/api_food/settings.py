@@ -12,7 +12,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['84.201.153.57', 'localhost',]
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

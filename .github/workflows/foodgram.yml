@@ -54,7 +54,6 @@ jobs:
         key: ${{ secrets.SSH_YANDEX_CLOUD }}
         script: |
             sudo apt install docker.io
-            cd infra/
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO_NAME }}
             sudo docker-compose stop
             sudo docker-compose rm web
