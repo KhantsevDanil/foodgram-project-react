@@ -6,7 +6,7 @@ env = environ.Env()
 environ.Env.read_env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = '1h03v&l6kp*5&5@8s4f1f&(%74uh9e*uxpwu^_5l(2+%r3nnw!'
 
 DEBUG = False
 
