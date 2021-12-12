@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - ../backend/.env
+      - ../backend/api_food/.env
   web:
     depends_on:
       - db
@@ -26,7 +26,7 @@ services:
       - static_value:/code/static/
       - media_value:/code/media/
     env_file:
-      - ../backend/.env
+      - ../backend/api_food/.env
   nginx:
     depends_on:
       - web

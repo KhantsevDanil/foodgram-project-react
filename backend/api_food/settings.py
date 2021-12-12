@@ -1,9 +1,9 @@
 import os
-"""import environ
+import environ
 
 env = environ.Env()
 
-environ.Env.read_env()"""
+environ.Env.read_env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = '1h03v&l6kp*5&5@8s4f1f&(%74uh9e*uxpwu^_5l(2+%r3nnw!'
@@ -66,12 +66,12 @@ WSGI_APPLICATION = 'api_food.wsgi.application'
 }"""
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',
+        'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': env('POSTGRES_NAME'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),
+        'PORT': env('POSTGRES_PORT'),
     }
 }
 AUTH_PASSWORD_VALIDATORS = [
