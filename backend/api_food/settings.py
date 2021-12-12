@@ -6,7 +6,7 @@ env = environ.Env()
 environ.Env.read_env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = '1h03v&l6kp*5&5@8s4f1f&(%74uh9e*uxpwu^_5l(2+%r3nnw!'
+SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
@@ -58,12 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_food.wsgi.application'
 
-"""DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}"""
 DATABASES = {
     'default': {
         'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
@@ -74,6 +68,7 @@ DATABASES = {
         'PORT': env('POSTGRES_PORT'),
     }
 }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

@@ -53,6 +53,7 @@ jobs:
         key: ${{ secrets.SSH_YANDEX_CLOUD }}
         script: |
           cd foodgram-project-react/backend/api_food/
+          rm .env
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
