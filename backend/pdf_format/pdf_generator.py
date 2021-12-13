@@ -25,17 +25,17 @@ def shopping_list_pdf(user):
     page.setFont('DejaVuSerif', 16)
     height = 760
     new_page = 0
-    for i in range(50):
+    for idx, ingr in enumerate(shopping_list, start=1):
         new_page += 1
         page.drawString(60, height, text=(
-            f'{i}'
+            f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
+            f'{ingr["ingredient__measurement_unit"]}'
         ))
         height -= 30
-        if new_page == 20:
-            page.drawString(60, height, text=(
-                f'{i}'
-            ))
+        if new_page == 23:
             page.showPage()
+            page.setFont('DejaVuSerif', 16)
+            height = 760
             new_page = 0
     page.save()
     return response

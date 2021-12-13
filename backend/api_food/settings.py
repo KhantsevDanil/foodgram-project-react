@@ -111,6 +111,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'api_food.paginator.CorePagination',
+    'PAGE_SIZE': 6,
 }
 DJOSER = {
     "HIDE_USERS": False,
