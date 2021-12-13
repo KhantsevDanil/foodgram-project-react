@@ -36,7 +36,8 @@ def shopping_list_pdf(user):
         if height <= 40:
             page.showPage()
             is_page_done = True
-    if not is_page_done:
-        page.showPage()
+        if not is_page_done:
+            page.showPage()
+            is_page_done = False
     page.save()
     return response
