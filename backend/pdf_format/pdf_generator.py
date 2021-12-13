@@ -28,13 +28,12 @@ def shopping_list_pdf(user):
     new_page = 0
     for idx, ingr in enumerate(shopping_list, start=1):
         new_page += 1
-        is_page_done = False
         page.drawString(60, height, text=(
             f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
             f'{ingr["ingredient__measurement_unit"]}'
         ))
         height -= 30
-        if new_page == 24:
+        if new_page == 20:
             page.showPage()
             new_page = 0
     page.save()
